@@ -11,3 +11,7 @@ vars.yml
 foo
 concourse-outputs
 config_tests
+cf-mgmt-local.env
+/cf-mgmt
+/.idea/
+/cf-mgmt-config

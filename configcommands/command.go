@@ -18,6 +18,7 @@ type UserRole struct {
 	UsersToRemove      []string `long:"user-to-remove" description:"User to remove, specify multiple times"`
 	SamlUsersToRemove  []string `long:"saml-user-to-remove" description:"SAML user to remove, specify multiple times"`
 	LDAPGroupsToRemove []string `long:"ldap-group-to-remove" description:"Group to remove, specify multiple times"`
+	UAAGroupsToRemove  []string `long:"uaa-group-to-remove" description:"Group to remove, specify multiple times"`
 }
 
 type UserRoleAdd struct {
@@ -25,6 +26,7 @@ type UserRoleAdd struct {
 	Users      []string `long:"user" description:"User to add, specify multiple times"`
 	SamlUsers  []string `long:"saml-user" description:"SAML user to add, specify multiple times"`
 	LDAPGroups []string `long:"ldap-group" description:"Group to add, specify multiple times"`
+	UAAGroups  []string `long:"uaa-group" description:"Group to add, specify multiple times"`
 }
 
 type ServiceAccess struct {
@@ -98,8 +100,13 @@ type NamedSpaceQuota struct {
 	AppTaskLimit            string `long:"app-task-limit" description:"App Task Limit for a space"`
 }
 
+//updateUsersBasedOnRole merges updates into config
+//userMgmt is the config's current state
+//userRole is the config's desired state, including hints for add or remove
 func updateUsersBasedOnRole(userMgmt *config.UserMgmt, currentLDAPGroups []string, userRole *UserRole, errorString *string) {
 	userMgmt.LDAPGroups = removeFromSlice(addToSlice(currentLDAPGroups, userRole.LDAPGroups, errorString), userRole.LDAPGroupsToRemove)
+	//todo refer to current UAA Groups instead of LDAP
+	userMgmt.UAAGroups = removeFromSlice(addToSlice(currentLDAPGroups, userRole.UAAGroups, errorString), userRole.UAAGroupsToRemove)
 	userMgmt.Users = removeFromSlice(addToSlice(userMgmt.Users, userRole.Users, errorString), userRole.UsersToRemove)
 	userMgmt.SamlUsers = removeFromSlice(addToSlice(userMgmt.SamlUsers, userRole.SamlUsers, errorString), userRole.SamlUsersToRemove)
 	userMgmt.LDAPUsers = removeFromSlice(addToSlice(userMgmt.LDAPUsers, userRole.LDAPUsers, errorString), userRole.LDAPUsersToRemove)

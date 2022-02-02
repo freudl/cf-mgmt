@@ -33,6 +33,7 @@ type User struct {
 	Email      string
 	Origin     string
 	GUID       string
+	Groups     []uaaclient.UserGroup
 }
 
 //NewDefaultUAAManager -
@@ -85,7 +86,7 @@ func (m *DefaultUAAManager) CreateExternalUser(userName, userEmail, externalID, 
 func (m *DefaultUAAManager) ListUsers() (*Users, error) {
 	users := &Users{}
 	lo.G.Debug("Getting users from Cloud Foundry")
-	userList, err := m.Client.ListAllUsers("", "", "userName,id,externalId,emails,origin", "")
+	userList, err := m.Client.ListAllUsers("", "", "userName,id,externalId,emails,origin,groups", "")
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +100,7 @@ func (m *DefaultUAAManager) ListUsers() (*Users, error) {
 			Email:      Email(user),
 			Origin:     user.Origin,
 			GUID:       user.ID,
+			Groups:     user.Groups,
 		})
 	}
 	return users, nil

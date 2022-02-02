@@ -7,6 +7,8 @@ type UserMgmt struct {
 	SamlUsers  []string `yaml:"saml_users"`
 	LDAPGroup  string   `yaml:"ldap_group,omitempty"`
 	LDAPGroups []string `yaml:"ldap_groups"`
+	UAAGroup   string   `yaml:"uaa_group,omitempty"`
+	UAAGroups  []string `yaml:"uaa_groups"`
 }
 
 // UserOrigin is an enum type encoding from what source a user originated.
@@ -25,13 +27,19 @@ const (
 	LDAPOrigin
 )
 
-func (u *UserMgmt) groups(groupName string) []string {
+func (u *UserMgmt) groups(groupName string) []string { //todo we need to distinguish UAA and LDAP groups
 	groupMap := make(map[string]string)
 	for _, group := range u.LDAPGroups {
 		groupMap[group] = group
 	}
 	if u.LDAPGroup != "" {
 		groupMap[u.LDAPGroup] = u.LDAPGroup
+	}
+	for _, group := range u.UAAGroups {
+		groupMap[group] = group
+	}
+	if u.UAAGroup != "" {
+		groupMap[u.UAAGroup] = u.UAAGroup
 	}
 	if groupName != "" {
 		groupMap[groupName] = groupName
